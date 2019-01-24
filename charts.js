@@ -3,40 +3,117 @@
 // https://www.jmercier.fr
 
 
-let easing = 0.1;
+let easing = 0.05;
 
 
 function setup() {
-	createCanvas(windowWidth,windowHeight);
+	createCanvas(windowWidth,2000);
 	
+	bar1 = new Bar(
+		300,200, // Width and height of the bar
+		createVector(width/2,600), //Position of the pie
+		easing, //value of the easing (0.1 => fast ; 0.001 => slow)
+		[200,300,200,56,78,23], //Values
+		color(298,81,70) //Color in HSB (IMPORTANT)
+	);
 	
 	pie1 = new Pie(
 		150, // Width and height of the pie
-		createVector(width/4,height/5), //Position of the pie
+		createVector(width/2,200), //Position of the pie
 		easing, //value of the easing (0.1 => fast ; 0.001 => slow)
-		[20,20,20,10,10,20], //Valeur in PERCENT
+		[20,20,20,10,10,20], //Values in PERCENT
 		color(201,86,80) //Color in HSB (IMPORTANT)
 	);
-	
-	pie2 = new Pie(300,createVector(width/2,height/2),easing/3,[64,20,16],color(58,86,80));
-	pie3 = new Pie(150,createVector(width-(width/4),height-(height/5)),easing/2,[33,33,44],color(298,81,70));
-	pie4 = new Pie(100,createVector(width-(width/4),height/5),easing/2,[23,34,3,30,5,5],color(46,76,100));
-	pie5 = new Pie(100,createVector(width/4,height-(height/5)),easing/2,[33,33,44],color(34,81,100));
-	
-
 }
 
 function draw() {
 	background("#BCE8F7");
 	noStroke();
-	
-	pie1.run();
-	pie2.run();
-	pie3.run();
-	pie4.run();
-	pie5.run();
-
+	bar1.display();
+	pie1.display();
 }
+
+class Bar{
+	constructor(bsWidth,hMax,position,easing,vals,color){
+		colorMode(HSB);
+		this.position = position;
+		this.bsWidth = bsWidth;
+		this.col = color;
+		this.nbSet = vals.length;
+		this.labels = []; //Values
+		this.posLabels = []; // Table of the position of each labels
+		this.vals = vals;
+		this.hMax = hMax;
+		this.shiftx = 5;
+		this.barheights=[];
+		let h,s,b;	
+		this.bWidth = 0;
+		this.parseColor();
+		this.calcWidths(this.bsWidth);
+		this.initBar();
+		this.label();
+		this.mapVals();
+		
+	}
+	initBar(){
+		for(var i=0;i<this.nbSet;i++){
+			this.barheights[i] = 0;
+		}
+	}
+	parseColor(){
+		this.h = hue(this.col);
+		this.s = saturation(this.col);
+		this.b = brightness(this.col);
+	}
+	
+	calcWidths(bsWidth){
+		this.bWidth = this.bsWidth/this.nbSet;
+		return this.bWidth;
+		
+	}
+	mapVals(){
+		let maxVal = max(this.vals);
+		for(var i=0;i<this.nbSet;i++){
+		 this.vals[i] = map(this.vals[i],0,maxVal,0,this.hMax);	
+		}
+	}
+	
+	label(){
+		for(var i=0;i<this.nbSet;i++){
+			this.labels[i]=round(this.vals[i]);
+		}
+	}
+	
+	update(){
+		// EASING 
+		for(var i=0;i<this.nbSet;i++){
+			this.barheights[i] += (this.vals[i]-this.barheights[i])*easing;
+		}
+	}
+	
+	display(){
+		textFont("staatliches");
+		textAlign(CENTER,CENTER);
+		push();
+		translate(this.position.x-(this.bsWidth/2),this.position.y);
+		this.update();
+		
+		for(var i=0;i<this.nbSet;i++){
+			fill(this.h,this.s,this.b-((this.b/this.nbSet)*i));
+			rect((i*this.bWidth)+(this.shiftx*i)/2,0,this.bWidth,-this.barheights[i]);	
+			textSize(this.bWidth/3.5);
+			//text(this.labels[i],((i*this.bWidth)+(this.shiftx*i))+(this.bWidth/2)-(this.shiftx*i/2),20);
+			text(this.labels[i],((i*this.bWidth)+(this.shiftx*i))+(this.bWidth/2)-(this.shiftx*i/2),-this.barheights[i]-20);
+		}
+		pop();
+	}
+}
+
+
+
+
+
+
 
 class Pie{
 	constructor(radius,position,easing,vals,col){
@@ -120,11 +197,5 @@ class Pie{
 			text(this.labels[i],x,y);			
 		}
 		pop();
-	}
-
-
-	
-	run(){
-		this.display();
 	}
 }

@@ -7,6 +7,7 @@ let easing = 0.05;
 
 
 function setup() {
+	colorMode(HSB);
 	createCanvas(windowWidth,2000);
 	
 	bar1 = new Bar(
@@ -15,7 +16,8 @@ function setup() {
 		easing, //value of the easing (0.1 => fast ; 0.001 => slow)
 		[200,300,200,56,78,23], //Values
 		[2014,2015,2016,2017,2018,2019],
-		color(298,81,70) //Color in HSB (IMPORTANT)
+		color(215,81,70) //Color in HSB (IMPORTANT)
+		
 	);
 	
 	pie1 = new Pie(
@@ -24,7 +26,7 @@ function setup() {
 		easing, //value of the easing (0.1 => fast ; 0.001 => slow)
 		[50,20,10,10,10], //Values in PERCENT
 		["Robin","Cyborg","Starfire", "Raven","Changelin"], //legends
-		color(201,86,80) //Color in HSB (IMPORTANT)
+		color(215,81,70) //Color in HSB (IMPORTANT)
 	);
 }
 
@@ -46,6 +48,7 @@ class Bar{
 		this.position = position;
 		this.bsWidth = bsWidth;
 		this.col = color;
+		console.log(this.col);
 		this.nbSet = vals.length;
 		this.labels = []; //Values
 		this.legends = legends;
@@ -73,6 +76,7 @@ class Bar{
 		this.h = hue(this.col);
 		this.s = saturation(this.col);
 		this.b = brightness(this.col);
+		console.log("h="+this.h+" -s="+this.s+" -b="+this.b);
 	}
 	
 	calcWidths(bsWidth){
@@ -114,6 +118,7 @@ class Bar{
 		
 		for(var i=0;i<this.nbSet;i++){
 			fill(this.h,this.s,this.b-((this.b/this.nbSet)*i));
+//			fill(this.h,this.s,this.b);
 			rect((i*this.bWidth)+(this.shiftx*i)/2,0,this.bWidth,-this.barheights[i]);	
 			textSize(this.bWidth/3.5);
 			//text(this.labels[i],((i*this.bWidth)+(this.shiftx*i))+(this.bWidth/2)-(this.shiftx*i/2),20);

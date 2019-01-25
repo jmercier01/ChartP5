@@ -14,6 +14,7 @@ function setup() {
 		createVector(width/2,600), //Position of the pie
 		easing, //value of the easing (0.1 => fast ; 0.001 => slow)
 		[200,300,200,56,78,23], //Values
+		[2014,2015,2016,2017,2018,2019],
 		color(298,81,70) //Color in HSB (IMPORTANT)
 	);
 	
@@ -40,13 +41,15 @@ class chart{
 	}
 }
 class Bar{
-	constructor(bsWidth,hMax,position,easing,vals,color){
+	constructor(bsWidth,hMax,position,easing,vals,legends,color){
 		colorMode(HSB);
 		this.position = position;
 		this.bsWidth = bsWidth;
 		this.col = color;
 		this.nbSet = vals.length;
 		this.labels = []; //Values
+		this.legends = legends;
+		
 		this.posLabels = []; // Table of the position of each labels
 		this.vals = vals;
 		this.hMax = hMax;
@@ -97,6 +100,10 @@ class Bar{
 		}
 	}
 	
+	wlegends(i,posx){ //Write legends at the right place
+		text(this.legends[i],posx,20);
+	}
+	
 	display(){
 		textFont("staatliches");
 		textAlign(CENTER,CENTER);
@@ -110,7 +117,11 @@ class Bar{
 			rect((i*this.bWidth)+(this.shiftx*i)/2,0,this.bWidth,-this.barheights[i]);	
 			textSize(this.bWidth/3.5);
 			//text(this.labels[i],((i*this.bWidth)+(this.shiftx*i))+(this.bWidth/2)-(this.shiftx*i/2),20);
-			text(this.labels[i],((i*this.bWidth)+(this.shiftx*i))+(this.bWidth/2)-(this.shiftx*i/2),-this.barheights[i]-20);
+			let posx = ((i*this.bWidth)+(this.shiftx*i))+(this.bWidth/2)-(this.shiftx*i/2);
+			//Labels
+			text(this.labels[i],posx,-this.barheights[i]-20);
+			//Legends
+			this.wlegends(i,posx);
 		}
 		pop();
 	}

@@ -18,10 +18,11 @@ function setup() {
 	);
 	
 	pie1 = new Pie(
-		150, // Width and height of the pie
+		200, // Width and height of the pie
 		createVector(width/2,200), //Position of the pie
 		easing, //value of the easing (0.1 => fast ; 0.001 => slow)
-		[20,20,20,10,10,20], //Values in PERCENT
+		[50,20,10,10,10], //Values in PERCENT
+		["Robin","Cyborg","Starfire", "Raven","Changelin"], //legends
 		color(201,86,80) //Color in HSB (IMPORTANT)
 	);
 }
@@ -33,6 +34,11 @@ function draw() {
 	pie1.display();
 }
 
+class chart{
+	constructor(){
+		
+	}
+}
 class Bar{
 	constructor(bsWidth,hMax,position,easing,vals,color){
 		colorMode(HSB);
@@ -96,6 +102,7 @@ class Bar{
 		textAlign(CENTER,CENTER);
 		push();
 		translate(this.position.x-(this.bsWidth/2),this.position.y);
+		
 		this.update();
 		
 		for(var i=0;i<this.nbSet;i++){
@@ -116,7 +123,7 @@ class Bar{
 
 
 class Pie{
-	constructor(radius,position,easing,vals,col){
+	constructor(radius,position,easing,vals,legends,col){
 		//Facilities
 		angleMode(DEGREES);
 		colorMode(HSB);
@@ -127,6 +134,7 @@ class Pie{
 		this.vals = vals;
 		this.col = col;
 		this.position = position;
+		this.legends = legends;
 		
 		//Variables program wants
 		this.degrees = []; //Values in degrees for each valu in percent
@@ -170,11 +178,23 @@ class Pie{
 		}
 	}
 	
+	
 	update(){
 		// EASING 
 		for(var i=0;i<this.nbSet;i++){
 			this.angles[i] += (this.degrees[i]-this.angles[i])*easing;
 		}
+	}
+	
+	wlegends(i){ //Write legends at the right place
+		push();
+		let shifty = this.radius/7;
+		let wdthSqr = this.radius/10;
+		translate(this.radius, i*shifty-((wdthSqr*this.nbSet+shifty)/2));
+		rect(0,0,wdthSqr,wdthSqr);
+		textAlign(LEFT,TOP);
+		text(this.legends[i],wdthSqr+5,0);
+		pop();
 	}
 	
 	
@@ -184,18 +204,23 @@ class Pie{
 		ellipseMode(CENTER);
 		push();
 		translate(this.position.x,this.position.y);
-
 		this.update();
 		
-		for(var i=this.nbSet;i>=0;i--){	
+		for(var i=this.nbSet-1;i>=0;i--){	
 			var x = cos(this.posLabels[i])*this.radius/1.5;	
 			var y = sin(this.posLabels[i])*this.radius/1.5;
 			
 			fill(this.h,this.s,this.b-((this.b/this.nbSet)*i));
 			arc(0,0,this.radius,this.radius,0,this.angles[i]);
-			textSize(this.radius/5);
-			text(this.labels[i],x,y);			
+			
+			textSize(this.radius/8);
+			text(this.labels[i]+"%",x,y);
+			
+			// legends
+			this.wlegends(i);
 		}
+		
 		pop();
+//		square(30, 20, 55);
 	}
 }
